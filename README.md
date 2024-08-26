@@ -261,7 +261,3 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 ## Troubleshooting
 
 - https://docs.cilium.io/en/latest/network/l2-announcements/#troubleshooting
-
-```
-
-```
