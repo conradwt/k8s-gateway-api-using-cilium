@@ -1,9 +1,0 @@
-apiVersion: 'cilium.io/v2alpha1'
-kind: CiliumLoadBalancerIPPool
-metadata:
-  name: 'pool'
-spec:
-  blocks:
-    - start: '<add start ip address>'
-      stop: '<add ending ip address>'
-  disabled: false
