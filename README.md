@@ -258,6 +258,10 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
 - https://docs.cilium.io/en/latest/network/servicemesh/gateway-api/gateway-api/#what-is-gateway-api
 
+- https://docs.cilium.io/en/latest/network/servicemesh/gateway-api/http
+
+- https://docs.cilium.io/en/latest/network/servicemesh/gateway-api/https
+
 ## Troubleshooting
 
 - https://docs.cilium.io/en/latest/network/l2-announcements/#troubleshooting
