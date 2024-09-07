@@ -47,23 +47,33 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
     ```zsh
     cilium install --version 1.16.1 \
-     --set kubeProxyReplacement=true \
-     --set gatewayAPI.enabled=true
+      --namespace kube-system \
+      --set kubeProxyReplacement=true \
+      --set gatewayAPI.enabled=true \
+      --set hubble.enabled=true \
+      --set hubble.ui.enabled=true \
+      --set hubble.relay.enabled=true
     ```
 
-6.  enable the Hubble UI
+6.  wait for Cilium to be up and running
 
     ```zsh
-    cilium hubble enable --ui
+    cilium status --wait
     ```
 
-7.  install MetalLB
+7.  verify that Cilium Gateway API was enabled and deployed
+
+    ```zsh
+    cilium config view  | grep -w "enable-gateway-api"
+    ```
+
+8.  install MetalLB
 
     ```zsh
     kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
     ```
 
-8.  locate the K8s cluster's subnet
+9.  locate the K8s cluster's subnet
 
     ```zsh
     docker network inspect gateway-api-cilium | jq '.[0].IPAM.Config[0]["Subnet"]'
@@ -81,13 +91,13 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     194.1.2.100-194.1.2.110
     ```
 
-9.  create the `01-metallb-address-pool.yaml` file
+10. create the `01-metallb-address-pool.yaml` file
 
     ```zsh
     cp 01-metallb-address-pool.yaml.example 01-metallb-address-pool.yaml
     ```
 
-10. update the `01-metallb-address-pool.yaml`
+11. update the `01-metallb-address-pool.yaml`
 
     ```yaml
     apiVersion: metallb.io/v1beta1
@@ -102,31 +112,31 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 
     Note: The IP range needs to be in the same range as the K8s cluster, `gateway-api-cilium`.
 
-11. apply the address pool manifest
+12. apply the address pool manifest
 
     ```zsh
     kubectl apply -f 01-metallb-address-pool.yaml
     ```
 
-12. apply Layer 2 advertisement manifest
+13. apply Layer 2 advertisement manifest
 
     ```zsh
     kubectl apply -f 02-metallb-advertise.yaml
     ```
 
-13. deploy the demo app
+14. deploy the demo app
 
     ```zsh
     kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.11/samples/bookinfo/platform/kube/bookinfo.yaml
     ```
 
-14. deploy the Cilium Gateway
+15. deploy the Gateway and HTTPRoute resources
 
     ```zsh
     kubectl apply -f https://raw.githubusercontent.com/cilium/cilium/1.16.1/examples/kubernetes/gateway/basic-http.yaml
     ```
 
-15. output info about the gateway resource
+16. output info about the gateway resource
 
     ```zsh
     kubectl get gateway my-gateway
@@ -139,7 +149,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     my-gateway   cilium   192.168.49.100   True         8s
     ```
 
-16. output info about the service resource
+17. output info about the service resource
 
     ```zsh
     kubectl get svc cilium-gateway-my-gateway
@@ -152,14 +162,14 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     cilium-gateway-my-gateway   LoadBalancer   10.102.213.185   192.168.49.100   80:32085/TCP   18s
     ```
 
-17. populate $GATEWAY_IP for future commands:
+18. populate $GATEWAY_IP for future commands:
 
     ```zsh
     export GATEWAY_IP=$(kubectl get gateway my-gateway -o jsonpath='{.status.addresses[0].value}')
     echo $GATEWAY_IP
     ```
 
-18. test the routing rule
+19. test the routing rule
 
     ```zsh
     curl --fail -s http://"${GATEWAY_IP}"/details/1 | jq
@@ -248,7 +258,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     * Connection #0 to host 192.168.49.100 left intact
     ```
 
-19. tear down the cluster
+20. tear down the cluster
 
     ```zsh
     minikube delete --profile gateway-api-cilium
@@ -261,7 +271,3 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
 - https://docs.cilium.io/en/latest/network/servicemesh/gateway-api/http
 
 - https://docs.cilium.io/en/latest/network/servicemesh/gateway-api/https
-
-## Troubleshooting
-
-- https://docs.cilium.io/en/latest/network/l2-announcements/#troubleshooting
