@@ -258,7 +258,7 @@ because it doesn't expose Linux VM IP addresses to the host OS (i.e. macOS).
     * Connection #0 to host 192.168.49.100 left intact
     ```
 
-20. tear down the cluster
+20. teardown the cluster
 
     ```zsh
     minikube delete --profile gateway-api-cilium
