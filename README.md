@@ -4,7 +4,7 @@ The purpose of this example is to provide instructions for running the K8s Gatew
 
 ## Software Requirements
 
-- Cilium CLI v0.16.15 or newer
+- Cilium CLI v0.16.17 or newer
 
 - Helm v3.15.2 or newer
 
